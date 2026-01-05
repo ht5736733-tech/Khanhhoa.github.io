@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Trang hình phạt</title>
+<link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{
+    width:100vw;height:100vh;
+    background:url("background.jpg") center/cover no-repeat;
+    font-family:'Quicksand', sans-serif;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    overflow:hidden;
+    color:white;
+}
+
+/* Box */
+#box{
+    background:rgba(0,0,0,.65);
+    padding:25px;
+    width:320px;
+    border-radius:20px;
+    text-align:center;
+    z-index:5;
+}
+
+h3{margin-bottom:8px}
+p{font-size:14px;margin-bottom:10px}
+
+/* Textarea */
+textarea{
+    width:100%;
+    height:90px;
+    border-radius:10px;
+    border:none;
+    padding:10px;
+    resize:none;
+    outline:none;
+    font-size:14px;
+}
+
+/* Button */
+button{
+    margin-top:12px;
+    width:100%;
+    padding:12px;
+    border:none;
+    border-radius:12px;
+    background:#ff4d6d;
+    color:white;
+    font-size:16px;
+    cursor:pointer;
+}
+
+/* Status */
+#status{
+    margin-top:12px;
+    min-height:22px;
+    font-size:14px;
+    color:#ffb347;
+}
+
+/* ❤️ Tim rơi */
+.heart-fall{
+    position:fixed;
+    top:-30px;
+    color:#ff4d6d;
+    pointer-events:none;
+    text-shadow:0 0 6px #ff4d6d,0 0 18px #ff8fa3;
+    animation:fall linear forwards;
+}
+@keyframes fall{
+    to{transform:translateY(110vh) rotate(360deg);opacity:0}
+}
+
+/* 👆 Tim bay */
+.heart-touch{
+    position:fixed;
+    color:#ff4d6d;
+    pointer-events:none;
+    text-shadow:0 0 6px #ff4d6d,0 0 18px #ff8fa3;
+    animation:fly 1.4s ease-out forwards;
+}
+@keyframes fly{
+    0%{transform:translate(-50%,-50%) scale(.5)}
+    100%{transform:translate(-50%,-160px) scale(1.4);opacity:0}
+}
+</style>
+</head>
+
+<body>
+
+<div id="box">
+    <h3>❓ Câu hỏi</h3>
+    <p>Hãy khen người tạo 1 câu😜😝</p>
+
+    <textarea id="answer" placeholder="Nhập câu trả lời của bạn..."></textarea>
+
+    <button onclick="sendToFacebook()">Gửi câu trả lời </button>
+
+    <div id="status"></div>
+</div>
+
+<audio id="bgm" src="Nhac.mp3.mp3" loop></audio>
+
+<script>
+/* 🎵 Nhạc xuyên suốt */
+const bgm = document.getElementById("bgm");
+if(localStorage.music){
+    bgm.currentTime = localStorage.time || 0;
+    bgm.play();
+}
+setInterval(()=>localStorage.time = bgm.currentTime, 500);
+
+/* ❤️ Tim rơi */
+setInterval(()=>{
+    const h=document.createElement("div");
+    h.className="heart-fall";
+    h.innerHTML="❤";
+    h.style.left=Math.random()*100+"vw";
+    h.style.fontSize=14+Math.random()*22+"px";
+    h.style.animationDuration=4+Math.random()*3+"s";
+    document.body.appendChild(h);
+    setTimeout(()=>h.remove(),7000);
+},260);
+
+/* 👆 Tim bay */
+document.body.addEventListener("click",e=>{
+    const h=document.createElement("div");
+    h.className="heart-touch";
+    h.innerHTML="❤";
+    h.style.left=e.clientX+"px";
+    h.style.top=e.clientY+"px";
+    h.style.fontSize=18+Math.random()*18+"px";
+    document.body.appendChild(h);
+    setTimeout(()=>h.remove(),1400);
+});
+
+/* 📤 Gửi qua Messenger */
+function sendToFacebook(){
+    const ans = document.getElementById("answer").value.trim();
+    const status = document.getElementById("status");
+
+    if(!ans){
+        alert("Bạn chưa nhập câu trả lời");
+        return;
+    }
+
+    const FB_ID = "61567042568341"; // 🔴 THAY UID FACEBOOK NGƯỜI TẠO
+
+    const text = encodeURIComponent(
+        "🔐 XÁC MINH TRANG WEB\n\nCâu trả lời:\n" + ans
+    );
+
+    window.open(
+        `https://m.me/${FB_ID}?text=${text}`,
+        "_blank"
+    );
+
+    status.innerHTML = "📩 Đã mở Messenger.<br>Vui lòng gửi câu trả lời để chờ xác minh!";
+}
+</script>
+
+</body>
+</html>

@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Love Rain</title>
+<link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+html, body {
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+
+    background-image: url("background1.jpg");
+    background-size: cover;        /* phủ full màn hình */
+    background-position: center;   /* căn giữa */
+    background-repeat: no-repeat;  /* không lặp */
+    background-attachment: fixed;
+}
+
+/* Canvas full màn hình */
+canvas {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+}
+
+/* Thông điệp giữa màn hình */
+#message {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    color: red;
+    font-size: 26px;
+    text-align: center;
+    opacity: 0;
+    transition: opacity 0.5s ease;
+    z-index: 10;
+    padding: 0 15px;
+    font-family:'Quicksand', sans-serif;
+}
+
+/* Ảnh rơi */
+.falling-img {
+    position: fixed;
+    top: -100px;
+    width: 70px;
+    animation: fall linear forwards;
+    pointer-events: none;
+    z-index: 9;
+}
+
+@keyframes fall {
+    to {
+        transform: translateY(120vh) rotate(360deg);
+        opacity: 0;
+    }
+}
+
+/* Màn hình chạm bật nhạc */
+#tap {
+    position: fixed;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: pink;
+    font-size: 18px;
+    background: rgba(0,0,0,0.8);
+    z-index: 20;
+    text-align: center;
+}
+</style>
+</head>
+
+<body>
+
+<audio id="bgm" src="music.mp3" loop></audio>
+
+<div id="tap">👆 Chạm vào màn hình để bắt đầu 💕</div>
+
+<canvas id="canvas"></canvas>
+<div id="message"></div>
+
+<audio id="music" loop>
+    <source src="Nhac.mp3" type="audio/mpeg">
+</audio>
+
+<script>
+/* nhạc */
+const bgm=document.getElementById("bgm");
+if(localStorage.music){
+    bgm.currentTime=localStorage.time||0;
+    bgm.play();
+}
+setInterval(()=>localStorage.time=bgm.currentTime,300);
+/* ===== Full canvas ===== */
+const canvas = document.getElementById("canvas");
+const ctx = canvas.getContext("2d");
+
+function resize() {
+    canvas.width = innerWidth;
+    canvas.height = innerHeight;
+}
+resize();
+addEventListener("resize", resize);
+
+/* ===== Tim rơi ===== */
+const hearts = [];
+for (let i = 0; i < 120; i++) {
+    hearts.push({
+        x: Math.random() * canvas.width,
+        y: Math.random() * canvas.height,
+        size: Math.random() * 20 + 10,
+        speed: Math.random() * 2 + 1
+    });
+}
+
+function drawHearts() {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    hearts.forEach(h => {
+        ctx.font = h.size + "px Arial";
+        ctx.fillStyle = "pink";
+        ctx.fillText("❤", h.x, h.y);
+        h.y += h.speed;
+        if (h.y > canvas.height) {
+            h.y = -20;
+            h.x = Math.random() * canvas.width;
+        }
+    });
+    requestAnimationFrame(drawHearts);
+}
+drawHearts();
+
+/* ===== Thông điệp ===== */
+const messages = [
+    "Khánh Hòa thân mến🥰",
+    "Chúc Khánh Hòa một ngày sinh nhật vui vẻ💖",
+    "Chúc Khánh Hòa sang tuổi mới chăm ngoan học giỏi💖",
+    "Chúc Khánh Hào càng ngày càng xink, càng dthw hơn💖",
+    "Chúc Khánh Hòa đỗ nguyện vọng 1🥰"
+];
+
+const messageBox = document.getElementById("message");
+let index = 0;
+
+function showMessages() {
+    if (index < messages.length) {
+        messageBox.innerText = messages[index];
+        messageBox.style.opacity = 1;
+
+        setTimeout(() => {
+            messageBox.style.opacity = 0;
+            index++;
+        }, 2000);
+
+        setTimeout(showMessages, 2000);
+    } else {
+        startImageRain();
+    }
+}
+
+/* ===== Ảnh rơi ===== */
+const images = ["anh2.jpg", "anh3.jpeg", "anh4.jpg", "anh5.jpg", "anh6.jpeg", "anh7.jpeg", "anh8.jpeg", "anh9.jpeg"];
+
+function createFallingImage() {
+    const img = document.createElement("img");
+    img.src = images[Math.floor(Math.random() * images.length)];
+    img.className = "falling-img";
+    img.style.left = Math.random() * (innerWidth - 70) + "px";
+    img.style.animationDuration = (Math.random() * 3 + 4) + "s";
+    document.body.appendChild(img);
+    setTimeout(() => img.remove(), 8000);
+}
+
+function startImageRain() {
+    setInterval(createFallingImage, 500);
+}
+
+/* ===== Bật nhạc khi chạm ===== */
+const tap = document.getElementById("tap");
+const music = document.getElementById("music");
+
+tap.addEventListener("click", () => {
+    music.play();
+    tap.style.display = "none";
+    setTimeout(showMessages, 500);
+});
+</script>
+
+</body>
+</html>

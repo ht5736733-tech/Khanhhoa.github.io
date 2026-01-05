@@ -1,0 +1,252 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+<title>Nhập mật khẩu</title>
+<link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+.pass-box{
+    position:relative;
+}
+
+#togglePass{
+    position:absolute;
+    right:12px;
+    top:50%;
+    transform:translateY(-50%);
+    font-size:20px;
+    cursor:pointer;
+    user-select:none;
+    opacity:.8;
+}
+
+#togglePass:active{
+    transform:translateY(-50%) scale(.9);
+}
+*{margin:0;padding:0;box-sizing:border-box}
+body{
+    width:100vw;height:100vh;
+    background:url("background.jpg") center/cover no-repeat;
+    overflow:hidden;
+    font-family:'Quicksand', sans-serif;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+}
+
+/* Box */
+#box{
+    background:rgba(0,0,0,.6);
+    padding:25px;
+    border-radius:18px;
+    width:300px;
+    color:white;
+    text-align:center;
+    z-index:5;
+}
+
+/* Avatar */
+#avatar{
+    width:90px;height:90px;
+    border-radius:50%;
+    object-fit:cover;
+    border:3px solid #ff4d6d;
+    box-shadow:0 0 10px #ff4d6d,0 0 25px #ff8fa3;
+    margin-bottom:10px;
+}
+
+/* Input */
+input{
+    width:100%;
+    padding:12px;
+    font-size:20px;
+    text-align:center;
+    border:none;
+    border-radius:10px;
+    outline:none;
+}
+
+/* Message */
+#msg{
+    min-height:24px;
+    margin:10px 0;
+}
+
+/* Button */
+button{
+    width:100%;
+    padding:12px;
+    font-size:18px;
+    border:none;
+    border-radius:10px;
+    background:#ff4d6d;
+    color:white;
+    margin-top:10px;
+}
+
+/* ❤️ Tim rơi */
+.heart-fall{
+    position:fixed;top:-30px;
+    color:#ff4d6d;
+    pointer-events:none;
+    text-shadow:0 0 5px #ff4d6d,0 0 15px #ff8fa3;
+    animation:fall linear forwards;
+}
+@keyframes fall{
+    to{transform:translateY(110vh) rotate(360deg);opacity:0}
+}
+
+/* 👆 Tim bay */
+.heart-touch{
+    position:fixed;
+    pointer-events:none;
+    color:#ff4d6d;
+    text-shadow:0 0 6px #ff4d6d,0 0 20px #ff8fa3;
+    animation:fly 1.4s ease-out forwards;
+}
+@keyframes fly{
+    0%{transform:translate(-50%,-50%) scale(.5);opacity:1}
+    100%{transform:translate(-50%,-160px) scale(1.4);opacity:0}
+}
+
+/* 💥 Tim nổ */
+.heart-burst{
+    position:fixed;
+    pointer-events:none;
+    color:#ff4d6d;
+    text-shadow:0 0 8px #ff4d6d,0 0 20px #ff8fa3;
+    animation:burst 1s ease-out forwards;
+}
+@keyframes burst{
+    to{
+        transform:
+          translate(calc(var(--x)*1px), calc(var(--y)*1px))
+          scale(1.2) rotate(360deg);
+        opacity:0;
+    }
+}
+</style>
+</head>
+
+<body>
+
+<div class="pass-box">
+    <img id="avatar" src="avatar.jpg">
+    <h3>Nhập pass đi ng đẹp😘</h3>
+
+    <input
+        id="pass"
+        type="password"
+        placeholder="Nhập mật khẩu"
+        autocomplete="off"
+    >
+    <span id="togglePass" onclick="togglePass()">👁</span>
+    <div id="msg"></div>
+    <button onclick="checkPass()">Xác nhận</button>
+</div>
+
+<audio id="bgm" src="Nhac.mp3" loop></audio>
+
+<script>
+function togglePass(){
+    const input = document.getElementById("pass");
+    const icon = document.getElementById("togglePass");
+
+    if(input.type === "password"){
+        input.type = "text";
+        icon.textContent = "🙈";
+    }else{
+        input.type = "password";
+        icon.textContent = "👁";
+    }
+}
+/* 🎵 Nhạc xuyên trang */
+const bgm=document.getElementById("bgm");
+if(localStorage.music){
+    bgm.currentTime=localStorage.time||0;
+    bgm.play();
+}
+setInterval(()=>localStorage.time=bgm.currentTime,500);
+
+/* ❤️ Tim rơi */
+setInterval(()=>{
+    const h=document.createElement("div");
+    h.className="heart-fall";
+    h.innerHTML="❤";
+    h.style.left=Math.random()*100+"vw";
+    h.style.fontSize=16+Math.random()*20+"px";
+    h.style.animationDuration=4+Math.random()*3+"s";
+    document.body.appendChild(h);
+    setTimeout(()=>h.remove(),7000);
+},260);
+
+/* 👆 Tim bay */
+document.body.addEventListener("click",e=>{
+    const h=document.createElement("div");
+    h.className="heart-touch";
+    h.innerHTML="❤";
+    h.style.left=e.clientX+"px";
+    h.style.top=e.clientY+"px";
+    h.style.fontSize=18+Math.random()*18+"px";
+    document.body.appendChild(h);
+    setTimeout(()=>h.remove(),1400);
+});
+
+/* 💥 Tim nổ */
+function burst(){
+    const cx=innerWidth/2, cy=innerHeight/2;
+    for(let i=0;i<24;i++){
+        const h=document.createElement("div");
+        h.className="heart-burst";
+        h.innerHTML="❤";
+        h.style.left=cx+"px";
+        h.style.top=cy+"px";
+        h.style.fontSize=16+Math.random()*18+"px";
+        h.style.setProperty("--x",(Math.random()*400-200));
+        h.style.setProperty("--y",(Math.random()*400-200));
+        document.body.appendChild(h);
+        setTimeout(()=>h.remove(),1000);
+    }
+}
+
+/* 🔐 PASS */
+
+const PASSWORD="khanhhoaxinhgai"; // 👈 đổi pass
+let fail=0;
+
+function checkPass(){
+    const input=document.getElementById("pass");
+    const msg=document.getElementById("msg");
+
+    if(input.value===PASSWORD){
+        msg.innerHTML="✅ Đúng òi🥰<br>Chuyển đến trang tiếp theo sau 3 giây";
+        msg.style.color="#00ffcc";
+        burst();
+        setTimeout(()=>location.href="đúng-pass.html",3000);
+    }else{
+        fail++;
+        if(fail>=3){
+            msg.innerHTML="🚫 Đã sai 3 lần";
+            msg.style.color="#ff8080";
+            setTimeout(()=>location.href="sai-pass.html",1000);
+        }else{
+            msg.innerHTML="❌ Sai òi🙄";
+            msg.style.color="#ff8080";
+            setTimeout(()=>{
+                msg.innerHTML="";
+                input.value="";
+                input.focus();
+            },1200);
+        }
+    }
+}
+window.onload = ()=>{
+    const msg = document.getElementById("msg");
+    msg.innerHTML = "Sai pass 3 lần sẽ có hình phạt☠️";
+      msg.className = "warning";
+};
+</script>
+
+</body>
+</html>

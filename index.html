@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+<title>Xoay ngang để tiếp tục</title>
+<link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{
+    width:100vw;height:100vh;
+    background:url("background.jpg") center/cover no-repeat;
+    overflow:hidden;
+    font-family:'Quicksand', sans-serif;
+}
+
+/* Overlay xoay ngang */
+#overlay{
+    position:fixed;inset:0;
+    background:rgba(0,0,0,.85);
+    color:#fff;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    text-align:center;
+    font-size:22px;
+    z-index:10;
+}
+
+/* Nhắc chạm */
+#touch{
+    position:absolute;inset:0;
+    display:none;
+    justify-content:center;
+    align-items:center;
+    color:white;
+    font-size:26px;
+    animation:pulse 1.5s infinite;
+}
+@keyframes pulse{0%{opacity:.4}50%{opacity:1}100%{opacity:.4}}
+
+/* ❤️ Tim rơi */
+.heart-fall{
+    position:fixed;
+    top:-30px;
+    color:#ff4d6d;
+    pointer-events:none;
+    text-shadow:0 0 5px #ff4d6d,0 0 15px #ff8fa3;
+    animation:fall linear forwards;
+}
+@keyframes fall{
+    to{transform:translateY(110vh) rotate(360deg);opacity:0}
+}
+
+/* ❤️ Tim bay từ chạm */
+.heart-touch{
+    position:fixed;
+    pointer-events:none;
+    color:#ff4d6d;
+    text-shadow:0 0 6px #ff4d6d,0 0 20px #ff8fa3;
+    animation:fly 1.4s ease-out forwards;
+}
+@keyframes fly{
+    0%{transform:translate(-50%,-50%) scale(.5);opacity:1}
+    100%{transform:translate(-50%,-160px) scale(1.4);opacity:0}
+}
+</style>
+</head>
+
+<body>
+
+<div id="overlay">📱 Vui lòng xoay ngang màn hình</div>
+<div id="touch">👉 Chạm vào màn hình để tiếp tục</div>
+
+<audio id="bgm" src="Nhac.mp3.mp3" loop></audio>
+
+<script>
+const overlay=document.getElementById("overlay");
+const touch=document.getElementById("touch");
+const bgm=document.getElementById("bgm");
+
+function isLandscape(){return innerWidth>innerHeight}
+function check(){
+    overlay.style.display=isLandscape()?"none":"flex";
+    touch.style.display=isLandscape()?"flex":"none";
+}
+addEventListener("resize",check);
+addEventListener("orientationchange",check);
+check();
+
+/* Fullscreen */
+function fullscreen(){
+    const e=document.documentElement;
+    if(e.requestFullscreen)e.requestFullscreen();
+    else if(e.webkitRequestFullscreen)e.webkitRequestFullscreen();
+}
+
+/* Nhạc xuyên trang */
+function startMusic(){
+    if(!localStorage.music){
+        bgm.play();
+        localStorage.music="on";
+    }else{
+        bgm.currentTime=localStorage.time||0;
+        bgm.play();
+    }
+}
+setInterval(()=>localStorage.time=bgm.currentTime,500);
+
+/* Tim rơi */
+setInterval(()=>{
+    const h=document.createElement("div");
+    h.className="heart-fall";
+    h.innerHTML="❤";
+    h.style.left=Math.random()*100+"vw";
+    h.style.fontSize=16+Math.random()*20+"px";
+    h.style.animationDuration=4+Math.random()*3+"s";
+    document.body.appendChild(h);
+    setTimeout(()=>h.remove(),7000);
+},250);
+
+/* Chạm */
+let started=false;
+document.body.addEventListener("click",e=>{
+    if(!isLandscape())return;
+
+    if(!started){
+        started=true;
+        fullscreen();
+        startMusic();
+        setTimeout(()=>location.href="pass.html",500);
+    }
+
+    const h=document.createElement("div");
+    h.className="heart-touch";
+    h.innerHTML="❤";
+    h.style.left=e.clientX+"px";
+    h.style.top=e.clientY+"px";
+    h.style.fontSize=20+Math.random()*20+"px";
+    document.body.appendChild(h);
+    setTimeout(()=>h.remove(),1500);
+});
+</script>
+
+</body>
+</html>
